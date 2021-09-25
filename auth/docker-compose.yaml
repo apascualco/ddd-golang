@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+
+  auth:
+    build:
+      context: .
+      dockerfile: Dockerfile.api.local
+    container_name: auth
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysql_auth_read
+      - mysql_auth_write
+    volumes:
+      - ./:/app
+    environment:
+      AUTH_HOST: 0.0.0.0
+      AUTH_DBHOSTREADER: mysql_auth_read
+      AUTH_DBPORTREADER: 3306
+      AUTH_DBHOSTWRITER: mysql_auth_write
+      AUTH_DBPORTWRITER: 3306
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8080/health"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  auth-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker.local
+    container_name: auth-worker
+    depends_on:
+      - auth
+      - mysql_auth_read
+      - mysql_auth_write
+    volumes:
+      - ./:/app
+    environment:
+      WORKER: true
+      AUTH_DBHOSTWRITER: mysql_auth_read
+      AUTH_DBPORTWRITER: 3306
+
+networks:
+  default:
+    name: infra-networks
+    external: true

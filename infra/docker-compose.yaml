@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+
+  rabbitmq:
+    container_name: rabbitmq-apascualco 
+    volumes:
+        - ../infra/rabbitMQ/definitions.json:/etc/rabbitmq/definitions.json
+        - ../infra/rabbitMQ/rabbitmq.config:/etc/rabbitmq/rabbitmq.config
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
+      - "5671:5671"
+      - "5672:5672"
+    environment: 
+      RABBITMQ_DEFAULT_VHOST: apascualco 
+      RABBITMQ_DEFAULT_USER: rabbitmq
+      RABBITMQ_DEFAULT_PASS: admin
+
+  mysql_auth_read:
+    image: mysql:8.0.22
+    container_name: mysql_auth_read
+    volumes:
+      - mysql_auth_read:/var/lib/mysql
+      - ../auth/internal/platform/storage/mysql/migration:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_DATABASE: auth
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: admin
+    ports:
+      - "3366:3306"
+
+  mysql_auth_write:
+    image: mysql:8.0.22
+    container_name: mysql_auth_write
+    volumes:
+      - mysql_auth_write:/var/lib/mysql
+      - ../auth/internal/platform/storage/mysql/migration:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_DATABASE: auth
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: admin
+    ports:
+      - "3367:3306"
+
+  mysql_user_read:
+    image: mysql:8.0.22
+    container_name: mysql_user_read
+    volumes:
+      - mysql_user_read:/var/lib/mysql
+      - ../auth/internal/platform/storage/mysql/migration:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_DATABASE: user
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: admin
+    ports:
+      - "3368:3306"
+
+  mysql_user_write:
+    image: mysql:8.0.22
+    container_name: mysql_user_write
+    volumes:
+      - mysql_user_write:/var/lib/mysql
+      - ../auth/internal/platform/storage/mysql/migration:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_DATABASE: user
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: admin
+    ports:
+      - "3369:3306"
+
+networks:
+  default:
+    name: infra-networks
+
+volumes:
+  mysql_auth_read:
+  mysql_auth_write:
+  mysql_user_read:
+  mysql_user_write:

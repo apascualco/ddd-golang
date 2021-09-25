@@ -1,0 +1,16 @@
+root = "." 
+tmp_dir = "tmp"
+
+[build]
+cmd = "sleep 90"
+full_bin = "./auth"
+log = "auth-error.log"
+include_ext = ["go", "yaml"]
+exclude_dir = ["tmp", "vendor"]
+delay = 1000
+
+[log]
+time = true
+
+[misc]
+clean_on_exit = true

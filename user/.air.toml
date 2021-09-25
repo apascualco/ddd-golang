@@ -1,0 +1,17 @@
+root = "." 
+tmp_dir = "tmp"
+
+[build]
+cmd = "go build -o user cmd/main.go"
+full_bin = "./user"
+log = "auth-error.log"
+include_ext = ["go", "yaml"]
+exclude_dir = ["tmp", "vendor"]
+delay = 1000
+
+[log]
+time = true
+
+[misc]
+clean_on_exit = true
+
